@@ -6,4 +6,8 @@ module "networking" {
   public_cidr          = [for i in range(2, 255, 2) : cidrsubnet(local.vpc_cidr, 8, i)]
   private_cidr         = [for i in range(1, 255, 2) : cidrsubnet(local.vpc_cidr, 8, i)]
   private_subnet_count = var.private_subnet_count
+  access_ip            = var.access_ip
+  security_group       = local.security_group
+
+
 }

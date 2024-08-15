@@ -76,24 +76,28 @@ resource "aws_route_table_association" "rt_assoc" {
   route_table_id = aws_route_table.igw_rt.id
 }
 
-resource "aws_security_group" "allow_tls" {
-  name        = "allow ssh "
-  description = "Allow ssh traffic "
-  vpc_id      = aws_vpc.mtc_k8_vpc.id
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+resource "aws_security_group" "mysg" {
+  for_each = var.security_group
+  name = each.value.name
+  description = each.value.description
+  dynamic "ingress" {
+    for_each = each.value.ingress
+    content {
+      from_port = ingress.value.from
+      to_port = ingress.value.to
+      protocol = ingress.value.protocol
+      cidr_blocks = ingress.value.cidr_block
+    }
   }
   egress {
     from_port = 0
     to_port = 0
     protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = var.access_ip
   }
+}
 
-  tags = {
-    Name = "allow_ssh"
-  }
+
+resource "aws_db_subnet_group" "demi-subnet-group" {
+  
 }
